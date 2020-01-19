@@ -1,0 +1,21 @@
+.form-popup .modal-dialog{
+width: 100%;
+right: auto;
+left: 20%;
+max-width: 50%;
+}
+.pre-cost{text-decoration: line-through; color: #a5a5a5;}
+.space-ten{padding: 10px 0;}
+
+.fade{
+    opacity: 100 !important;
+}
+
+thead{
+	text-align: center;
+	font-size: 12px;
+}
+
+tbody{
+	text-align: center;
+}

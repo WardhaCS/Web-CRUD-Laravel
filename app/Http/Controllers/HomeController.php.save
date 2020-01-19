@@ -1,0 +1,82 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\User;
+
+class HomeController extends Controller
+{
+    /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
+    /**
+     * Show the application dashboard.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function index()
+    {
+        return view('home');
+    }
+    
+    public function boking()
+    {
+	return view('boking');
+    }
+
+    public function store(Request $request)
+    {
+        $boking=new \App\Boking;
+   	$boking->kode=$request->kode;
+	$boking->penagungjawab=$request->pg;
+	$boking->fakultas=$request->fakultas;
+	$boking->cekin=$request->cekin;
+	$boking->cekout=$request->cekout;
+	$boking->save();
+
+	return redirect('/Asrama');
+//return $request->kode;
+      }
+
+    
+   public function list()
+   {
+	$pg = User::all();
+    	return view('list', ['pg' => $pg]);
+   }
+
+   public function edit($id)
+   {
+	$pg = User::find($id);
+        return view('edit', ['pg' => $pg]);
+   }
+   
+  public function update($id, Request $request)
+  {
+    $this->validate($request,[
+	   'name' => 'required',
+	   'email' => 'required'
+    ]);
+
+    $pg = User::find($id);
+    $pg->name = $request->name;
+    $pg->email = $request->email;
+    $pg->save();
+    return redirect('/Asrama/list');
+  }
+
+    public function delete($id)
+    {
+    $pg = User::find($id);
+    $pg->delete();
+    return redirect('/Asrama/list');
+    }
+}

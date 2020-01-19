@@ -1,0 +1,90 @@
+'use strict';
+
+class IncorporationForm extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      shareholders: [{ name: 'Charles' }, { name: 'David' }],
+    };
+  }
+  
+  handleShareholderNameChange = (idx) => (evt) => {
+    const newShareholders = this.state.shareholders.map((shareholder, sidx) => {
+    if (idx !== sidx) return shareholder;
+     return { ...shareholder, name: evt.target.value };
+    });
+    
+    this.setState({ shareholders: newShareholders });
+  }
+  
+  handleSubmit = (evt) => {
+    const { name, shareholders } = this.state;
+    alert(`Incorporated: ${name} with ${shareholders.length} shareholders`);
+  }
+  
+  handleAddShareholder = (idx) => {
+	if (1 !== 9){
+	    this.setState({ shareholders: this.state.shareholders.concat([{ name: `` }]) });
+	}else{
+		alert("ok");
+	}
+  }
+  
+  handleRemoveShareholder = (idx) => () => {
+    this.setState({ shareholders: this.state.shareholders.filter((s, sidx) => idx !== sidx) });
+  }
+  
+render() {    
+    return (
+      <form onSubmit={this.handleSubmit} method="POST" action="/Asrama/store">
+
+	<div class="form-group"><label for="l1">Kode:</label>
+	<input type="text" class="form-control" id="l1" name="kode"/>
+	</div>
+	
+	<div class="form-group">	
+	<label>Fakultas:</label>
+	<select class="form-control" name="fakultas">
+	<option value='Teknik Informatika'>Teknik Informatika</option>
+	<option value='Teknik Elektro'>Teknik Elektro</option>
+	<option value='Teknik Kimia'>Tenik Kimia</option>
+	</select>
+	</div>
+
+	<div class="form-group">
+	<label>Tangal:</label>
+	<input type="date" name="cekin"/>
+	<input type="date" name="cekout"/>
+	</div>
+
+        <table class="table table-bordered">
+    	<thead>
+      		<tr>
+		<th>Nama</th>
+		<th>Gander</th>
+		<th>Penagungjawab</th>
+		<th>Remove</th>
+		</tr>
+	</thead>
+        {this.state.shareholders.map((shareholder, idx) => (
+	<tbody>
+	<tr>
+        	<td><input type="text" placeholder={`Shareholder #${idx + 1} name`} value={shareholder.name} onChange={this.handleShareholderNameChange(idx)}/></td>
+		<td><input type="radio" name={`gander${idx + 1}`} value="male" id="male"/><label for="male">L</label>
+		<input type="radio" name={`gander${idx + 1}`} value="female" id="female"/><label for="female">P</label></td>
+		<td><input type="hidden" name={`tg${idx + 1}`} value={window.myVar}/>{window.myVar}</td>
+        	<td><button type="button" onClick={this.handleRemoveShareholder(idx)} className="small">-</button></td>
+	</tr>
+	</tbody>
+        ))}
+	</table>
+        <button type="button" onClick={this.handleAddShareholder} className="small">Add Shareholder</button>
+        <button type="submit" class="btn btn-primary">Incorporate</button>
+      </form>
+    )
+  }
+}
+
+
+ReactDOM.render(<IncorporationForm/>, document.getElementById("add"));
+

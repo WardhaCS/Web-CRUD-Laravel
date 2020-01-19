@@ -1,0 +1,104 @@
+@extends('layouts.app')
+
+@section('content')
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">{{ __('Login') }}</div>
+
+                <div class="card-body">
+		  <table class="table table-bordered table-sm">
+    <thead>
+      <tr>
+        <th>Kode</th>
+        <th>Penangug Jawab</th>
+        <th>Penghuni</th>
+	<th>Hari</th>
+	<th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+@foreach($ch as $l)
+      <tr>
+        <td>{{$l->kode}}</td>
+        <td>{{$l->name}}</td>
+        <td>{{$l->nama}}</td>
+	<td>{{$l->Hari}}</td>
+	<td>
+		 <button type="button" class="btn btn-primary" data-toggle="modal" data-target=#{{$l->name}}{{$l->kode}}><i class="fa fa-search"></i>Edit</button>
+                 <a href="/Asrama/check_hapus/{{ $l->kode }}" class="btn btn-danger">Hapus</a>
+	</td>
+      </tr>
+@endforeach
+    </tbody>
+	  </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@foreach($pg as $p)
+<div class="modal form-popup" id={{$p->name}}{{$p->kode}}>
+<div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <a href="#" data-dismiss="modal" class="class pull-right"><span class="glyphicon glyphicon-remove"></span></a>
+		<h3>Edit</h3>
+            </div>
+            <div class="modal-body">
+<form method="GET" action="/Asrama/check_edit">
+		 <table class="table table-bordered table-sm">
+		<tbody>
+		<tr><td colspan="4"><input type="text" name="kode" value={{$p->kode}}></td></td></tr>
+		<tr><td colspan="2">Cek IN</td><td colspan="2">Cek OUT</td></tr>
+		<tr>
+		<td colspan="2"><input type="date" name="cekin" value={{$p->cekin}}></td>
+		<td colspan="2"><input type="date" name="cekout" value={{$p->cekout}}></td>
+		</tr>
+		<tr><td colspan="4">Fakultas</td></tr>
+		<tr><td colspan="4">
+			<select name="fakultas">
+			  <option value="Teknik Informatika" @if($p->fakultas=='Teknik Informatika')selected @endif>Teknik Informatika</option>
+			  <option value="Teknik Elektro" @if($p->fakultas=='Teknik Elektro')selected @endif>Teknik Elektro</option>
+			  <option value="Teknik Fisika" @if($p->fakultas=='Teknik Fisika')selected @endif>Teknik Fisika</option>
+			</select>
+		</td>
+		</tr>
+		<tr><td colspan="4">Penagungjawab</td></tr>
+		<tr>
+		<td colspan="4"><input type="text" name="penagungjawab" value={{$p->name}}></td>
+		</tr>
+		<tr><td colspan="4">Penghuni</td></tr>
+		<tr>
+		@foreach($pg as $t)
+		@if($p->kode == $t->kode)
+		<td>
+			<input type="text" name="penghuni"{{$i+=1}} value={{$t->nama}}></td>
+		</td>
+		@endif
+		@endforeach
+		</tr>
+		<tr>
+		@foreach($pg as $t)
+                @if($p->kode == $t->kode)
+                <td>
+			 <select>
+                          <option value="L" @if($t->gander=='L')selected @endif>Laki-Laki</option>
+                          <option value="P" @if($t->gander=='P')selected @endif>Perempuan</option>
+                        </select>
+		</td>
+                @endif
+                @endforeach
+                </tr>
+		</tbody>
+		</table>
+		<button type="submit" class="btn btn-primary">Update</button>
+</form>
+            </div>
+        </div>
+</div>
+</div>
+@endforeach
+@endsection

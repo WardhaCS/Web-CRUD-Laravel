@@ -1,0 +1,130 @@
+<?php
+
+namespace App\Http\Controllers;
+use DB;
+use Illuminate\Http\Request;
+use \App\User;
+
+class HomeController extends Controller
+{
+    /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
+    /**
+     * Show the application dashboard.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function index()
+    {
+        return view('home');
+    }
+    
+    public function boking()
+    {
+	return view('boking');
+    }
+	
+    public function store(Request $request)
+    {
+	$bokings=new \App\Boking;
+        $bokings->kode=$request->kode;
+        $bokings->penagungjawab=$request->pg;
+        $bokings->fakultas=$request->fakultas;
+        $bokings->cekin=$request->cekin;
+        $bokings->cekout=$request->cekout;
+        $bokings->save();
+	
+	$penghuni=new \App\Penghuni;
+	for ($i = 1; $i <= $request->en_answer; $i++) {
+        $boking[] = [
+	    'kode_boking' => $request->kode,
+            'nama' => $request->name[$i],
+            'gander' => $request->gander[$i]
+        ];
+    }
+        $penghuni::insert($boking);
+	return redirect('/');
+
+    }
+
+   public function check()
+   {
+ 	$check = DB::table('bokings')
+            ->join('users', 'users.id', '=', 'bokings.penagungjawab')
+	    ->join('penghuni', 'penghuni.kode_boking', '=', 'bokings.kode')
+            ->select('bokings.kode', 'users.name', DB::raw("COUNT(penghuni.nama) as nama"), DB::raw("(bokings.cekout-bokings.cekin) as Hari"))
+	    ->groupBy('bokings.kode', 'bokings.cekout', 'bokings.cekin', 'users.name')
+        ->get();
+	
+	 $edit = DB::table('bokings')
+            ->join('users', 'users.id', '=', 'bokings.penagungjawab')
+            ->join('penghuni', 'penghuni.kode_boking', '=', 'bokings.kode')
+            ->select('bokings.kode', 'users.name', 'penghuni.nama','penghuni.gander','bokings.cekout', 'bokings.cekin','bokings.fakultas', 'penagungjawab' => $request->penagungjawab)
+        ->get();
+
+	
+	return view('list', ['ch' => $check,'pg' => $edit]);
+//	return array_merge($edit);
+   }
+	
+   public function check_edit(Request $request){
+	DB::table('bokings')
+         ->where('kode', $request->id)
+         ->update(['fakultas' => $request->fakultas, 'cekin' => $request->cekin, 'cekout' => $request->cekout]);
+	return redirect('/Asrama/check');
+//	return $request->id;
+	 
+   }
+    
+   public function list()
+   {
+	$pg = User::all();
+    	return view('list', ['pg' => $pg]);
+   }
+
+   public function edit($id)
+   {
+	$pg = User::find($id);
+        return view('edit', ['pg' => $pg]);
+   }
+   
+  public function update($id, Request $request)
+  {
+    $this->validate($request,[
+	   'name' => 'required',
+	   'email' => 'required'
+    ]);
+
+    $pg = User::find($id);
+    $pg->name = $request->name;
+    $pg->email = $request->email;
+    $pg->save();
+    return redirect('/Asrama/list');
+  }
+
+    public function delete($id)
+    {
+    $pg = User::find($id);
+    $pg->delete();
+    return redirect('/Asrama/list');
+    }
+
+    public function chart()
+   {
+        return view('chart');
+    }
+	
+   public function pdf()
+   {
+	return view('pdf');
+   }
+
+}
